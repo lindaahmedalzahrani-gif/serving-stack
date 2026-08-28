@@ -6,7 +6,7 @@ import time
 import uuid
 
 import torch
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Header, Depends 
 from fastapi.responses import StreamingResponse
 from transformers import AutoModelForCausalLM, AutoTokenizer
 
@@ -25,7 +25,8 @@ MODEL_ID = os.environ.get(
     "MODEL_ID",
     "Qwen/Qwen2.5-0.5B-Instruct"
 )
-
+API_KEY = os.environ.get("API_KEY", "")
+MAX_TOKENS = int(os.environ.get("MAX_TOKENS", "256"))
 app = FastAPI(
     title="serving-stack",
     version="wk2"
@@ -44,7 +45,11 @@ model.to("cpu")
 model.eval()
 
 print("Model ready")
-
+def require_api_key(authorization: str | None = Header(default=None)):
+    if not API_KEY:
+        return
+    if authorization != f"Bearer {API_KEY}":
+        raise HTTPException(status_code=401, detail="Unauthorized")
 
 @app.get("/health", response_model=HealthResponse)
 def health() -> HealthResponse:
@@ -55,7 +60,9 @@ def health() -> HealthResponse:
 
 
 @app.get("/v1/models", response_model=ModelList)
-def list_models() -> ModelList:
+def list_models(
+    _: None = Depends(require_api_key)
+) -> ModelList:
     return ModelList(
         data=[
             ModelCard(
@@ -98,13 +105,11 @@ def _generate(
     return out[0][input_ids.shape[1]:]
 
 
-@app.post(
-    "/v1/chat/completions",
-    response_model=None
-)
+@app.post("/v1/chat/completions", response_model=None)
 def chat_completions(
     req: ChatCompletionRequest
 ):
+    print("COMPLETIONS DONE")
     if req.model != MODEL_ID:
         raise HTTPException(
             status_code=400,
@@ -120,7 +125,7 @@ def chat_completions(
         )
 
     input_ids, prompt_tokens = _build_inputs(req)
-
+    req.max_tokens = min(req.max_tokens, MAX_TOKENS)
     if req.stream:
         return _stream(
             input_ids,
