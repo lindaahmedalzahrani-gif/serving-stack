@@ -1,0 +1,69 @@
+{
+  "model": "Qwen/Qwen2.5-1.5B-Instruct-AWQ",
+  "quantization": "awq",
+  "attempts": [
+    {
+      "prompt": "What's the weather in Riyadh?",
+      "should_call": true,
+      "did_call": true,
+      "correct": true
+    },
+    {
+      "prompt": "What's the weather in Dubai and what time is it there?",
+      "should_call": true,
+      "did_call": true,
+      "correct": true
+    },
+    {
+      "prompt": "What is the capital of France?",
+      "should_call": false,
+      "did_call": true,
+      "correct": false
+    },
+    {
+      "prompt": "What's the weather in Riyadh?",
+      "should_call": true,
+      "did_call": true,
+      "correct": true
+    },
+    {
+      "prompt": "What's the weather in Dubai and what time is it there?",
+      "should_call": true,
+      "did_call": true,
+      "correct": true
+    },
+    {
+      "prompt": "What is the capital of France?",
+      "should_call": false,
+      "did_call": true,
+      "correct": false
+    },
+    {
+      "prompt": "What's the weather in Riyadh?",
+      "should_call": true,
+      "did_call": true,
+      "correct": true
+    },
+    {
+      "prompt": "What's the weather in Dubai and what time is it there?",
+      "should_call": true,
+      "did_call": true,
+      "correct": true
+    },
+    {
+      "prompt": "What is the capital of France?",
+      "should_call": false,
+      "did_call": true,
+      "correct": false
+    },
+    {
+      "prompt": "What's the weather in Riyadh?",
+      "should_call": true,
+      "did_call": true,
+      "correct": true
+    }
+  ],
+  "score": 7,
+  "total": 10,
+  "passed": false
+}
